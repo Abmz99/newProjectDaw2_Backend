@@ -1,0 +1,13 @@
+{# templates/obra/show.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalle de la Obra{% endblock %}
+
+{% block body %}
+    <div class="obra-detail">
+        <h1>{{ obra.titulo }}</h1>
+        <p>Género: {{ obra.genero }}</p>
+        <p>Autor: {{ obra.autor }}</p>
+    </div>
+{% endblock %}
