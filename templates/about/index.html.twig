@@ -1,12 +1,13 @@
 {# templates/about/index.html.twig #}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>About</title>
-</head>
-<body>
-    <h1>About Us</h1>
-    <p>{{ aboutText }}</p>
-</body>
-</html>
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}!</h1>
+    <p>This about message is coming from:</p>
+    {% if aboutMessage %}
+        <div>
+            <strong>Message Body:</strong> {{ aboutMessage.getBodyMessage }}
+        </div>
+    {% else %}
+        <p>No about message found.</p>
+    {% endif %}
+</div>

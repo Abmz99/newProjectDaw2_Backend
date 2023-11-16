@@ -6,8 +6,13 @@ controllers:
 
 about:
     path: /about
-    controller: App\Controller\AboutController::index
+    controller: App\Controller\AboutController::getAboutText
 
 contact:
     path: /contact
-    controller: App\Controller\ContactController::index
+    controller: App\Controller\ContactController::getContactText
+
+
+obra_show:
+    path: /obra/{titulo}
+    controller: App\Controller\ObraController::getSpecificObra

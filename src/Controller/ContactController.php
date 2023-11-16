@@ -2,19 +2,25 @@
 // src/Controller/ContactController.php
 namespace App\Controller;
 
-use App\Service\ContactService;
+use App\Entity\Message;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 
 class ContactController extends AbstractController
 {
-    public function index(ContactService $ContactService)
+    public function getContactText(ManagerRegistry $doctrine): Response
     {
-        $ContactText = $ContactService->getContactText();
+        // Obtiene el repositorio de la entidad Message
+        $messageRepository = $doctrine->getRepository(Message::class);
 
-        return $this->render('Contact/index.html.twig', [
-            'ContactText' => $ContactText,
+        // Busca el mensaje específico para 'contact'
+        $contactMessage = $messageRepository->findOneBy(['codeMessage' => 'contact']);
+
+        // Renderiza la vista pasando solo el mensaje de 'contact'
+        return $this->render('contact/index.html.twig', [
+            'controller_name' => 'MessageController',
+            'contactMessage' => $contactMessage
         ]);
     }
 }
-?>

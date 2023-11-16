@@ -1,12 +1,13 @@
 {# templates/contact/index.html.twig #}
 
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Contact</title>
-</head>
-<body>
-    <h1>Contact Us</h1>
-    <p>{{ ContactText }}</p>
-</body>
-</html>
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}!</h1>
+    <p>This contact message is coming from:</p>
+    {% if contactMessage %}
+        <div>
+            <strong>Message Body:</strong> {{ contactMessage.getBodyMessage }}
+        </div>
+    {% else %}
+        <p>No contact message found.</p>
+    {% endif %}
+</div>
