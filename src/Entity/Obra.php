@@ -22,11 +22,11 @@ class Obra
     private $id;
 
     /**
-     * @var string
+     * @var string|null
      *
-     * @ORM\Column(name="Titulo", type="string", length=255, nullable=false)
+     * @ORM\Column(name="Titulo", type="string", length=255, nullable=true, options={"default"="NULL"})
      */
-    private $titulo;
+    private $titulo = 'NULL';
 
     /**
      * @var string
@@ -41,51 +41,46 @@ class Obra
      * @ORM\Column(name="Autor", type="string", length=255, nullable=false)
      */
     private $autor;
-
+    
     public function getId(): ?int
     {
         return $this->id;
     }
-
+ 
     public function getTitulo(): ?string
     {
         return $this->titulo;
     }
-
+ 
     public function setTitulo(string $titulo): static
     {
         $this->titulo = $titulo;
-
+ 
         return $this;
     }
-
+ 
     public function getGenero(): ?string
     {
         return $this->genero;
     }
-
+ 
     public function setGenero(string $genero): static
     {
         $this->genero = $genero;
-
+ 
         return $this;
     }
-
+ 
     public function getAutor(): ?string
     {
         return $this->autor;
     }
-
+ 
     public function setAutor(string $autor): static
     {
         $this->autor = $autor;
-
+ 
         return $this;
     }
 
-
 }
-
-
-
-

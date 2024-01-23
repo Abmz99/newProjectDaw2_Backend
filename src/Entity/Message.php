@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -40,28 +39,28 @@ class Message
     {
         return $this->id;
     }
-
+ 
     public function getCodeMessage(): ?string
     {
         return $this->codeMessage;
     }
-
+ 
     public function setCodeMessage(?string $codeMessage): static
     {
         $this->codeMessage = $codeMessage;
-
+ 
         return $this;
     }
-
+ 
     public function getBodyMessage(): ?string
     {
         return $this->bodyMessage;
     }
-
+ 
     public function setBodyMessage(?string $bodyMessage): static
     {
         $this->bodyMessage = $bodyMessage;
-
+ 
         return $this;
     }
 
