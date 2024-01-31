@@ -92,35 +92,32 @@ class ObraController extends AbstractController
         return $this->json($obrasData);
     }
 
-    #[Route('/obra/create', name: 'app_obra_create', methods: ['POST', 'GET'])]
-    public function create(): JsonResponse
-    {
-        
-        $titulo = "Título Generado";
-        $genero = "Género Generado";
-        $autor = "Autor Generado";
-    
-        $obra = new Obra();
-        $obra->setTitulo($titulo);
-        $obra->setGenero($genero);
-        $obra->setAutor($autor);
-    
-        $this->entityManager->persist($obra);
-        $this->entityManager->flush();
-    
-        $obraData = [
-            'id' => $obra->getId(),
-            'titulo' => $obra->getTitulo(),
-            'genero' => $obra->getGenero(),
-            'autor' => $obra->getAutor()
-        ];
-    
-        return $this->json([
-            'message' => 'Obra creada',
-            'obra' => $obraData
-        ], Response::HTTP_CREATED);
-    }
-    
+    #[Route('/obra/create', name: 'app_obra_create', methods: ['POST'])]
+public function create(Request $request): JsonResponse
+{
+    $data = json_decode($request->getContent(), true);
+
+    $obra = new Obra();
+    $obra->setTitulo($data['titulo']);
+    $obra->setGenero($data['genero']);
+    $obra->setAutor($data['autor']);
+
+    $this->entityManager->persist($obra);
+    $this->entityManager->flush();
+
+    $obraData = [
+        'id' => $obra->getId(),
+        'titulo' => $obra->getTitulo(),
+        'genero' => $obra->getGenero(),
+        'autor' => $obra->getAutor()
+    ];
+
+    return $this->json([
+        'message' => 'Obra creada',
+        'obra' => $obraData
+    ], Response::HTTP_CREATED);
+}
+
     
 
     // Método para actualizar una obra existente, recibe datos por PUT y devuelve JSON

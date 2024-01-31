@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+
 /**
  * Roles
  *
@@ -27,6 +28,23 @@ class Roles
      * @ORM\Column(name="tipo_rol", type="string", length=255, nullable=false)
      */
     private $tipoRol;
+
+    public function getIdRol(): ?int
+    {
+        return $this->idRol;
+    }
+
+    public function getTipoRol(): ?string
+    {
+        return $this->tipoRol;
+    }
+
+    public function setTipoRol(string $tipoRol): static
+    {
+        $this->tipoRol = $tipoRol;
+
+        return $this;
+    }
 
 
 }

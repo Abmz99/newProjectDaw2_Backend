@@ -2,6 +2,7 @@
 namespace App\Controller;
 
 use App\Entity\Usuario;
+use App\Entity\Roles;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -19,45 +20,77 @@ class UsuarioController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/api/usuario/registro', name: 'api_usuario_registro', methods: ['POST'])]
-    public function registro(Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
 
-        $usuario = new Usuario();
-        $usuario->setNombre($data['nombre']);
-        $usuario->setCorreo($data['correo']);
-        $usuario->setPassword($passwordHasher->hashPassword($usuario, $data['password']));
+#[Route('/api/usuario/registro', name: 'api_usuario_registro', methods: ['POST'])]
+public function registro(Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
+{
+    $data = json_decode($request->getContent(), true);
 
-        $this->entityManager->persist($usuario);
-        $this->entityManager->flush();
+    // Busca el rol estándar en la base de datos por su ID
+    $rolEstandar = $this->entityManager->getRepository(Roles::class)->find(2);
 
-        return $this->json(['message' => 'Usuario registrado exitosamente.', 'id' => $usuario->getIdUsuario()], Response::HTTP_CREATED);
+
+    if (!$rolEstandar) {
+        // Si no existe el rol estándar, devuelve un error
+        return $this->json(['error' => 'El rol estándar no está definido.'], Response::HTTP_BAD_REQUEST);
     }
+
+    $usuario = new Usuario();
+    $usuario->setNombre($data['nombre']);
+    $usuario->setCorreo($data['correo']);
+    $usuario->setPassword($passwordHasher->hashPassword($usuario, $data['password']));
+    $usuario->setIdRol($rolEstandar); // Asigna el rol estándar al nuevo usuario
+
+    $this->entityManager->persist($usuario);
+    $this->entityManager->flush();
+
+    return $this->json([
+        'message' => 'Usuario registrado exitosamente.',
+        'id' => $usuario->getIdUsuario(),
+        'rol' => $usuario->getIdRol()->getTipoRol(), // Retorna el tipo de rol
+    ], Response::HTTP_CREATED);
+}
+
+
+
 
   
-    #[Route('/api/usuario/editar/{id}', name: 'api_usuario_editar', methods: ['PUT'])]
-    public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, int $id): JsonResponse
-    {
-        // Aquí asumimos que solo los administradores pueden editar usuarios
-        // O puedes comprobar si el usuario autenticado tiene permisos para editar el usuario específico
-        $usuario = $this->entityManager->getRepository(Usuario::class)->find($id);
-        if (!$usuario) {
-            return $this->json(['message' => 'Usuario no encontrado.'], Response::HTTP_NOT_FOUND);
-        }
+#[Route('/api/usuario/editar/{id}', name: 'api_usuario_editar', methods: ['PUT'])]
+public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, int $id): JsonResponse
+{
+    // Asume que el método getUser() devuelve el usuario actualmente autenticado
+    $currentUser = $this->getUser();
+    $usuario = $this->entityManager->getRepository(Usuario::class)->find($id);
 
-        $data = json_decode($request->getContent(), true);
+    if (!$usuario) {
+        return $this->json(['message' => 'Usuario no encontrado.'], Response::HTTP_NOT_FOUND);
+    }
 
-        $usuario->setNombre($data['nombre']);
-        $usuario->setCorreo($data['correo']);
-        if (!empty($data['password'])) {
+    // Comprueba si el usuario actualmente autenticado es administrador o es el mismo usuario que se está editando
+    $isAdmin = ($currentUser->getIdRol()->getTipoRol() === 'Admin');
+    $isSelf = ($currentUser->getIdUsuario() === $usuario->getIdUsuario());
+
+    if (!$isAdmin && !$isSelf) {
+        // Si no es administrador y no es el propio usuario, no permitir la edición
+        return $this->json(['message' => 'Acción no autorizada.'], Response::HTTP_FORBIDDEN);
+    }
+
+    $data = json_decode($request->getContent(), true);
+
+    // Actualiza los datos del usuario
+    $usuario->setNombre($data['nombre']);
+    $usuario->setCorreo($data['correo']);
+    if (!empty($data['password'])) {
+        // Asegúrate de que la contraseña no sea la misma antes de rehashing
+        if (!$passwordHasher->isPasswordValid($usuario, $data['password'])) {
             $usuario->setPassword($passwordHasher->hashPassword($usuario, $data['password']));
         }
-
-        $this->entityManager->flush();
-
-        return $this->json(['message' => 'Usuario actualizado exitosamente.']);
     }
+
+    $this->entityManager->flush();
+
+    return $this->json(['message' => 'Usuario actualizado exitosamente.']);
+}
 
     #[Route('/api/usuario/eliminar/{id}', name: 'api_usuario_eliminar', methods: ['DELETE'])]
     public function eliminar(int $id): JsonResponse
@@ -74,27 +107,33 @@ class UsuarioController extends AbstractController
         return $this->json(['message' => 'Usuario eliminado exitosamente.']);
     }
 
+ 
+
     #[Route('/api/usuario/login', name: 'api_usuario_login', methods: ['POST'])]
-public function login(Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
-{
-    $data = json_decode($request->getContent(), true);
-
-    // Busca al usuario por su correo electrónico
-    $usuario = $this->entityManager->getRepository(Usuario::class)->findOneBy(['correo' => $data['correo']]);
+    public function login(Request $request, UserPasswordHasherInterface $passwordHasher): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
     
-    // Si no se encuentra el usuario o la contraseña no coincide, devuelve un error
-    if (!$usuario || !$passwordHasher->isPasswordValid($usuario, $data['password'])) {
-        return $this->json(['error' => 'Correo electrónico o contraseña incorrectos.'], Response::HTTP_UNAUTHORIZED);
+        // Busca al usuario por su correo electrónico
+        $usuario = $this->entityManager->getRepository(Usuario::class)->findOneBy(['correo' => $data['correo']]);
+        
+        // Si no se encuentra el usuario o la contraseña no coincide, devuelve un error
+        if (!$usuario || !$passwordHasher->isPasswordValid($usuario, $data['password'])) {
+            return $this->json(['error' => 'Correo electrónico o contraseña incorrectos.'], Response::HTTP_UNAUTHORIZED);
+        }
+    
+        // Comprueba el rol del usuario para determinar si es administrador
+        $isAdmin = ($usuario->getIdRol()->getTipoRol() === 'Admin');
+    
+        // Aquí podrías generar un JWT o iniciar una sesión
+        // y devolver la información relevante al usuario
+        return $this->json([
+            'message' => 'Inicio de sesión exitoso.',
+            'id' => $usuario->getIdUsuario(),
+            'isAdmin' => $isAdmin // Indica si el usuario es administrador
+            // 'token' => 'aquí_va_el_token_generado' // Incluiría el token JWT si estás utilizando JWT para la autenticación
+        ]);
     }
-
-    // token para mantener el estado de la autenticación
-    // de momento devolvera una confirmacion
-    return $this->json([
-        'message' => 'Inicio de sesión exitoso.',
-        'id' => $usuario->getIdUsuario(),
-        // 'token' => 'un_token_de_sesión_generado'
-    ]);
-}
-
+    
 
 }

@@ -1,6 +1,6 @@
 <?php
-
 namespace App\Entity;
+
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -32,6 +32,12 @@ class Usuario implements PasswordAuthenticatedUserInterface
      * @ORM\Column(type="string", length=255)
      */
     private $pswd;
+
+    /**
+     * @ORM\ManyToOne(targetEntity=Roles::class)
+     * @ORM\JoinColumn(name="ID_rol", referencedColumnName="ID_rol")
+     */
+    private $idRol;
 
     // Getters y setters...
 
@@ -72,4 +78,17 @@ class Usuario implements PasswordAuthenticatedUserInterface
         $this->pswd = $password;
         return $this;
     }
+
+    public function getIdRol(): ?Roles
+    {
+        return $this->idRol;
+    }
+
+    public function setIdRol(?Roles $idRol): self
+    {
+        $this->idRol = $idRol;
+        return $this;
+    }
+
+    
 }
