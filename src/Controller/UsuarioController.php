@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
+
 class UsuarioController extends AbstractController
 {
     private EntityManagerInterface $entityManager;
@@ -55,42 +56,47 @@ public function registro(Request $request, UserPasswordHasherInterface $password
 
 
   
+
+
 #[Route('/api/usuario/editar/{id}', name: 'api_usuario_editar', methods: ['PUT'])]
 public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, int $id): JsonResponse
 {
     // Asume que el método getUser() devuelve el usuario actualmente autenticado
     $currentUser = $this->getUser();
+
+    // Verifica que currentUser sea una instancia de la clase Usuario o su clase de entidad de usuario
+    if (!$currentUser instanceof Usuario) {
+        return $this->json(['message' => 'El usuario actual no está autenticado.'], Response::HTTP_UNAUTHORIZED);
+    }
+
     $usuario = $this->entityManager->getRepository(Usuario::class)->find($id);
 
     if (!$usuario) {
         return $this->json(['message' => 'Usuario no encontrado.'], Response::HTTP_NOT_FOUND);
     }
 
-    // Comprueba si el usuario actualmente autenticado es administrador o es el mismo usuario que se está editando
-    $isAdmin = ($currentUser->getIdRol()->getTipoRol() === 'Admin');
-    $isSelf = ($currentUser->getIdUsuario() === $usuario->getIdUsuario());
-
-    if (!$isAdmin && !$isSelf) {
-        // Si no es administrador y no es el propio usuario, no permitir la edición
-        return $this->json(['message' => 'Acción no autorizada.'], Response::HTTP_FORBIDDEN);
+    // Comprueba si el usuario actualmente autenticado es el mismo que el que se está editando
+    // O si es un administrador 
+    if ($currentUser->getIdUsuario() !== $usuario->getIdUsuario() && !$this->isGranted('ROLE_ADMIN')) {
+        return $this->json(['message' => 'No tienes permisos para editar este usuario.'], Response::HTTP_FORBIDDEN);
     }
 
     $data = json_decode($request->getContent(), true);
 
     // Actualiza los datos del usuario
-    $usuario->setNombre($data['nombre']);
-    $usuario->setCorreo($data['correo']);
-    if (!empty($data['password'])) {
-        // Asegúrate de que la contraseña no sea la misma antes de rehashing
-        if (!$passwordHasher->isPasswordValid($usuario, $data['password'])) {
-            $usuario->setPassword($passwordHasher->hashPassword($usuario, $data['password']));
-        }
+    $usuario->setNombre($data['nombre'] ?? $usuario->getNombre());
+    $usuario->setCorreo($data['correo'] ?? $usuario->getCorreo());
+
+    if (isset($data['password']) && $data['password']) {
+        $usuario->setPassword($passwordHasher->hashPassword($usuario, $data['password']));
     }
 
     $this->entityManager->flush();
 
     return $this->json(['message' => 'Usuario actualizado exitosamente.']);
 }
+
+// ...
 
     #[Route('/api/usuario/eliminar/{id}', name: 'api_usuario_eliminar', methods: ['DELETE'])]
     public function eliminar(int $id): JsonResponse

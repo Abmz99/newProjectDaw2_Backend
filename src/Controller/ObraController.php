@@ -92,7 +92,7 @@ class ObraController extends AbstractController
         return $this->json($obrasData);
     }
 
-    #[Route('/obra/create', name: 'app_obra_create', methods: ['POST'])]
+    #[Route('/obra/create', name: 'app_obra_create', methods: ['POST','GET'])]
 public function create(Request $request): JsonResponse
 {
     $data = json_decode($request->getContent(), true);
