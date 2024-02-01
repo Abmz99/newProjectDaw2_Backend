@@ -53,50 +53,48 @@ public function registro(Request $request, UserPasswordHasherInterface $password
 }
 
 
+// src/Controller/UsuarioController.php
 
-
-  
-
+// ...
 
 #[Route('/api/usuario/editar/{id}', name: 'api_usuario_editar', methods: ['PUT'])]
 public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, int $id): JsonResponse
 {
-    // Asume que el método getUser() devuelve el usuario actualmente autenticado
-    $currentUser = $this->getUser();
+    // Obtén la información del usuario actual desde el frontend (por ejemplo, ID del usuario)
+    // NOTA: Esto es solo un ejemplo y deberías tener un mecanismo de autenticación en su lugar
+    $usuarioActualId = $request->headers->get('User');
 
-    // Verifica que currentUser sea una instancia de la clase Usuario o su clase de entidad de usuario
-    if (!$currentUser instanceof Usuario) {
-        return $this->json(['message' => 'El usuario actual no está autenticado.'], Response::HTTP_UNAUTHORIZED);
-    }
-
+    // Encuentra el usuario por la ID proporcionada
+    //dd($id);
     $usuario = $this->entityManager->getRepository(Usuario::class)->find($id);
+    // dd($usuario);
 
-    if (!$usuario) {
-        return $this->json(['message' => 'Usuario no encontrado.'], Response::HTTP_NOT_FOUND);
+
+    // Si no se encuentra el usuario, devuelve un error
+    // if (!$usuario || $usuario->getIdUsuario() !== (int) $usuarioActualId) {
+    if (!isset($usuario)) {
+        return $this->json(['message' => 'Usuario no autorizado o no encontrado.'], Response::HTTP_FORBIDDEN);
     }
 
-    // Comprueba si el usuario actualmente autenticado es el mismo que el que se está editando
-    // O si es un administrador 
-    if ($currentUser->getIdUsuario() !== $usuario->getIdUsuario() && !$this->isGranted('ROLE_ADMIN')) {
-        return $this->json(['message' => 'No tienes permisos para editar este usuario.'], Response::HTTP_FORBIDDEN);
-    }
-
+    // Procesa los datos enviados y actualiza el usuario
     $data = json_decode($request->getContent(), true);
 
-    // Actualiza los datos del usuario
+    // Suponiendo que la actualización de contraseña y correo no es necesaria si no se proporcionan
     $usuario->setNombre($data['nombre'] ?? $usuario->getNombre());
     $usuario->setCorreo($data['correo'] ?? $usuario->getCorreo());
 
-    if (isset($data['password']) && $data['password']) {
+    // Si se proporciona una contraseña, actualiza la contraseña
+    if (!empty($data['password'])) {
         $usuario->setPassword($passwordHasher->hashPassword($usuario, $data['password']));
     }
 
+    // Persiste los cambios en la base de datos
     $this->entityManager->flush();
 
-    return $this->json(['message' => 'Usuario actualizado exitosamente.']);
+    // Devuelve una respuesta exitosa
+    return $this->json(['message' => 'Perfil actualizado con éxito.']);
 }
 
-// ...
 
     #[Route('/api/usuario/eliminar/{id}', name: 'api_usuario_eliminar', methods: ['DELETE'])]
     public function eliminar(int $id): JsonResponse
