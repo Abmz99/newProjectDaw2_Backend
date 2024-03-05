@@ -16,4 +16,3 @@ contact:
 obra_show:
     path: /obra/{titulo}
     controller: App\Controller\ObraController::getSpecificObra
-

@@ -4,12 +4,15 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
+
 
 /**
  * @ORM\Entity
  * @ORM\Table(name="usuario")
  */
-class Usuario implements PasswordAuthenticatedUserInterface
+class Usuario implements UserInterface, PasswordAuthenticatedUserInterface
+
 {
     /**
      * @ORM\Id
@@ -89,6 +92,32 @@ class Usuario implements PasswordAuthenticatedUserInterface
         $this->idRol = $idRol;
         return $this;
     }
+    public function getUsername(): string
+    {
+        return $this->correo;
+    }
 
+    public function getRoles(): array
+    {
+        // Devuelve los roles como un array de cadenas
+        return ['ROLE_USER']; // O cualquier rol que pueda tener tu usuario
+    }
+
+    public function getSalt(): ?string
+    {
+        return null;
+    }
+
+    public function eraseCredentials()
+    {
+        // Elimina datos sensibles de la entidad
+    }
+
+    // Métodos adicionales requeridos por PasswordAuthenticatedUserInterface
+
+    public function getUserIdentifier(): string
+    {
+        return $this->correo;
+    }
     
 }
