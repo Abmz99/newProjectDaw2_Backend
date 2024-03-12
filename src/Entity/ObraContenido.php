@@ -5,52 +5,55 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ObraContenido
- *
- * @ORM\Table(name="obra_contenido", indexes={@ORM\Index(name="ID_obra", columns={"ID_obra"})})
  * @ORM\Entity
+ * @ORM\Table(name="obra_contenido")
  */
 class ObraContenido
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="ID_obra_contenido", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $idObraContenido;
 
     /**
-     * @var string|null
-     *
-     * @ORM\Column(name="nombre_libro", type="string", length=255, nullable=true, options={"default"="NULL"})
-     */
-    private $nombreLibro = 'NULL';
-
-    /**
-     * @var int|null
-     *
-     * @ORM\Column(name="capitulo", type="integer", nullable=true, options={"default"="NULL"})
-     */
-    private $capitulo = NULL;
-
-    /**
-     * @var string|null
-     *
-     * @ORM\Column(name="contenido", type="text", length=65535, nullable=true, options={"default"="NULL"})
-     */
-    private $contenido = 'NULL';
-
-    /**
-     * @var \Obra
-     *
      * @ORM\ManyToOne(targetEntity="Obra")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="ID_obra", referencedColumnName="ID")
-     * })
+     * @ORM\JoinColumn(name="ID_obra", referencedColumnName="ID")
      */
-    private $idObra;
+    private $obra; // Cambio de $idObra a $obra para mejorar la claridad
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $descripcion;
 
+    // Getters y Setters
+
+    public function getIdObraContenido(): ?int
+    {
+        return $this->idObraContenido;
+    }
+
+    public function getObra(): ?Obra
+    {
+        return $this->obra;
+    }
+
+    public function setObra(?Obra $obra): self
+    {
+        $this->obra = $obra;
+        return $this;
+    }
+
+    public function getDescripcion(): ?string
+    {
+        return $this->descripcion;
+    }
+
+    public function setDescripcion(?string $descripcion): self
+    {
+        $this->descripcion = $descripcion;
+        return $this;
+    }
 }

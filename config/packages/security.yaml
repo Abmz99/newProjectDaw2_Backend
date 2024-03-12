@@ -20,9 +20,9 @@ security:
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
 
         api:
-            pattern: ^/api
+            pattern: ^/api/capitulos
             stateless: true
-            jwt: ~
+             jwt: true
 
         # Desactiva la seguridad para el entorno de desarrollo
         dev:
@@ -30,11 +30,11 @@ security:
             security: false
 
         # Configura el firewall principal
-        main:
-            lazy: true
-            provider: app_user_provider
+        # main:
+        #     lazy: true
+        #     provider: app_user_provider
 
     access_control:
         - { path: ^/api/usuario/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/usuario/registro, roles: PUBLIC_ACCESS }
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/capitulos, roles: IS_AUTHENTICATED_FULLY }
