@@ -22,7 +22,7 @@ security:
         api:
             pattern: ^/api/capitulos
             stateless: true
-             jwt: true
+            #  jwt: true
 
         # Desactiva la seguridad para el entorno de desarrollo
         dev:
@@ -37,4 +37,4 @@ security:
     access_control:
         - { path: ^/api/usuario/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/usuario/registro, roles: PUBLIC_ACCESS }
-        - { path: ^/api/capitulos, roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/capitulos, roles: PUBLIC_ACCESS }

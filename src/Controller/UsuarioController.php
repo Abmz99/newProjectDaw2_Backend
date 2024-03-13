@@ -58,14 +58,14 @@ public function registro(Request $request, UserPasswordHasherInterface $password
 
 
 
-#[Route('/api/usuario/editar/{id}', name: 'api_usuario_editar', methods: ['PUT'])]
-public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, int $id): JsonResponse
+#[Route('/api/usuario/editar/{email}', name: 'api_usuario_editar', methods: ['PUT'])]
+public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, string $email): JsonResponse
 {
     // Obtiene la información del usuario actual desde el frontend ID del usuario)  
-    $usuarioActualId = $request->headers->get('User');
+    $email = $request->headers->get('correo');
 
     // Encuentra el usuario por la ID proporcionada
-    $usuario = $this->entityManager->getRepository(Usuario::class)->find($id);
+    $usuario = $this->entityManager->getRepository(Usuario::class)->find($email);
 
     // Si no se encuentra el usuario, devuelve un error
     if (!isset($usuario)) {
@@ -111,6 +111,7 @@ public function login(Request $request, UserPasswordHasherInterface $passwordHas
 
     // Genera el JWT para el usuario
     $jwt = $JWTManager->create($usuario);
+   
 
     return $this->json([
         'message' => 'Inicio de sesión exitoso.',
