@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
-
+use App\Repository\UsuarioRepository;
 
 
 class UsuarioController extends AbstractController
@@ -59,14 +59,15 @@ public function registro(Request $request, UserPasswordHasherInterface $password
 
 
 #[Route('/api/usuario/editar/{email}', name: 'api_usuario_editar', methods: ['PUT'])]
-public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, string $email): JsonResponse
+public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, string $email, UsuarioRepository $userRepo): JsonResponse
 {
-    // Obtiene la información del usuario actual desde el frontend ID del usuario)  
-    $email = $request->headers->get('correo');
-
-    // Encuentra el usuario por la ID proporcionada
-    $usuario = $this->entityManager->getRepository(Usuario::class)->find($email);
-
+   // Obtiene la información del usuario actual desde el frontend ID del usuario)  
+    // $email = $request->headers->get('name');
+    $data = json_decode($request->getContent(), true);
+    
+   // Encuentra el usuario por la ID proporcionada
+    // $usuario = $this->entityManager->getRepository(Usuario::class)->find($email);
+    $usuario = $userRepo->findByEmail($email);
     // Si no se encuentra el usuario, devuelve un error
     if (!isset($usuario)) {
         return $this->json(['message' => 'Usuario no autorizado o no encontrado.'], Response::HTTP_FORBIDDEN);
@@ -75,8 +76,9 @@ public function editar(Request $request, UserPasswordHasherInterface $passwordHa
     // Procesa los datos enviados y actualiza el usuario
     $data = json_decode($request->getContent(), true);
 
-    $usuario->setNombre($data['nombre'] ?? $usuario->getNombre());
-    $usuario->setCorreo($data['correo'] ?? $usuario->getCorreo());
+    // $user = $this->entityManager->getRepository(Usuario::class)->find();
+    $usuario->setNombre($data['name'] ?? $usuario->getNombre()); 
+    $usuario->setPassword($data['pswd'] ?? $usuario->getPassword());
 
     // Si se proporciona una contraseña, actualiza la contraseña
     if (!empty($data['password'])) {

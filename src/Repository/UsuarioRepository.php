@@ -21,6 +21,14 @@ class UsuarioRepository extends ServiceEntityRepository
         parent::__construct($registry, Usuario::class);
     }
 
+    public function findByEmail($email){
+        return $this->createQueryBuilder('u')
+        ->andWhere('u.correo= :email')
+        ->setParameter('email', $email)
+        ->getQuery()
+        ->getOneOrNullResult(); 
+    }
+
 //    /**
 //     * @return Usuario[] Returns an array of Usuario objects
 //     */
