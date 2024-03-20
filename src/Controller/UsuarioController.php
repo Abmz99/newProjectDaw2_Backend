@@ -61,7 +61,7 @@ public function registro(Request $request, UserPasswordHasherInterface $password
 #[Route('/api/usuario/editar/{email}', name: 'api_usuario_editar', methods: ['PUT'])]
 public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, string $email, UsuarioRepository $userRepo): JsonResponse
 {
-   // Obtiene la información del usuario actual desde el frontend ID del usuario)  
+   // Obtiene la información del usuario actual desde el frontend ID del usuario)   
     // $email = $request->headers->get('name');
     $data = json_decode($request->getContent(), true);
     
@@ -91,8 +91,6 @@ public function editar(Request $request, UserPasswordHasherInterface $passwordHa
     // Devuelve una respuesta exitosa
     return $this->json(['message' => 'Perfil actualizado con éxito.']);
 }
-
-
 
 
 #[Route('/api/usuario/login', name: 'api_usuario_login', methods: ['POST'])]

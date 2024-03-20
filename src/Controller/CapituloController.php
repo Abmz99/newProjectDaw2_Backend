@@ -1,40 +1,39 @@
 <?php
 
+// CapituloController.php
 namespace App\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use App\Entity\Capitulos;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CapituloController extends AbstractController
 {
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
 
-    // Constructor del controlador, inyecta el EntityManager
     public function __construct(EntityManagerInterface $entityManager)
     {
         $this->entityManager = $entityManager;
     }
 
-    #[Route('/api/capitulos/{id}', name: 'api_get_capitulo', methods: ['GET'])]
-    public function getCapitulo($id): Response
+    #[Route('/api/capitulos/{id}', name: 'api_capitulos_show', methods: ['GET'])]
+    public function show(int $id): JsonResponse
     {
-        $capitulo = $this->entityManager->find($id);
+        $capitulo = $this->entityManager->getRepository(Capitulos::class)->find($id);
 
         if (!$capitulo) {
-            throw $this->createNotFoundException('No se encontró el capítulo con el ID: ' . $id);
+            return $this->json(['message' => 'Capítulo no encontrado.'], JsonResponse::HTTP_NOT_FOUND);
         }
 
-        // Serializar el objeto capítulo para devolverlo como respuesta
-        $data = [
+        return $this->json([
             'id' => $capitulo->getIdCapitulo(),
-            'num_capitulo' => $capitulo->getNumCapitulo(),
-            'titulo_capitulo' => $capitulo->getTituloCapitulo(),
+            'numero' => $capitulo->getNumCapitulo(),
+            'titulo' => $capitulo->getTituloCapitulo(),
             'contenido' => $capitulo->getContenido(),
-            // Puedes añadir más campos según sea necesario
-        ];
-
-        return $this->json($data);
+        
+        ]);
     }
+    
 }

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="capitulos", indexes={@ORM\Index(name="ID_obra", columns={"ID_obra"})})
  * @ORM\Entity
  */
-class Capitulos
+class Capitulos 
 {
     /**
      * @ORM\Column(name="ID_capitulo", type="integer")
@@ -24,9 +25,9 @@ class Capitulos
      */
     private $numCapitulo;
 
-    /**
-     * @ORM\Column(name="titulo_capitulo", type="string", length=255, nullabletrue, options={"default"="NULL"})
-*/
+   /**
+ * @ORM\Column(name="titulo_capitulo", type="string", length=255, nullable=true, options={"default"="NULL"})
+ */
 private $tituloCapitulo;
 /**
  * @ORM\Column(name="contenido", type="text", nullable=true, options={"default"="NULL"})
