@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Obra;
+use App\Repository\ObraGenerosRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -20,6 +21,66 @@ class ObraController extends AbstractController
     {
         $this->entityManager = $entityManager;
     }
+
+    
+
+
+    #[Route('/obra/{id}', name: 'app_obra_by_id', methods: ['GET'])]
+    public function getObraById(ManagerRegistry $doctrine, int $id): JsonResponse
+    {          
+        $obraRepository = $doctrine->getRepository(Obra::class);   
+          
+
+        $obra = $obraRepository->findOneBy(['id' => $id]);
+
+     
+        if (!$obra) {
+            return new JsonResponse(['error' => 'Obra no encontrada'], Response::HTTP_NOT_FOUND);
+        }
+ 
+        $obraData = [
+            'id' => $obra->getId(),
+            'titulo' => $obra->getTitulo(),
+            'descripcion' => $obra->getDescripcion(),
+            'autor' => $obra->getAutor(),
+            'rutaImagen' => $obra->getRutaImagen(),
+        ];
+
+        return $this->json($obraData);
+    }
+
+
+
+
+    #[Route('/obra/{id}/generos', name: 'app_obra_generos', methods: ['GET'])]
+    public function getGenerosByObraId(int $id, ObraGenerosRepository $obraGenerosRepository): JsonResponse
+    {
+        // Obtener los géneros asociados a la obra por su ID utilizando el repositorio
+        $generos = $obraGenerosRepository->findGeneroByObraId($id);
+    
+        // Formatear los datos de los géneros
+        $formattedGeneros = [];
+        foreach ($generos as $genero) {
+            $formattedGeneros[] = [
+                'id' => $genero['id'],
+                'nombre' => $genero['nombre'],
+            ];
+        }
+    
+        // Retornar la respuesta JSON con los géneros asociados a la obra
+        return $this->json($formattedGeneros);
+    }
+    
+
+
+
+
+
+
+    
+
+
+
 
     // Método para obtener obras por autor, devuelve JSON
     #[Route('/obra/autor/{autor}', name: 'app_obra_by_autor', methods: ['GET'])]
@@ -64,12 +125,14 @@ class ObraController extends AbstractController
         $obraData = [
             'id' => $obra->getId(),
             'titulo' => $obra->getTitulo(),
-            'genero' => $obra->getGenero(),
+            'descripcion' => $obra->getDescripcion(), // Nueva línea para obtener la descripción
             'autor' => $obra->getAutor(),
         ];
 
         return $this->json($obraData);
     }
+
+
 
     // Método para listar todas las obras, devuelve JSON
     #[Route('/obra', name: 'app_obra_index', methods: ['GET'])]
@@ -92,6 +155,9 @@ class ObraController extends AbstractController
         return $this->json($obrasData);
     }
 
+
+
+
     #[Route('/obra/create', name: 'app_obra_create', methods: ['POST','GET'])]
 public function create(Request $request): JsonResponse
 {
@@ -99,7 +165,7 @@ public function create(Request $request): JsonResponse
 
     $obra = new Obra();
     $obra->setTitulo($data['titulo']);
-    $obra->setGenero($data['genero']);
+    $obra->setDescripcion($data['descripcion']);
     $obra->setAutor($data['autor']);
 
     $this->entityManager->persist($obra);
@@ -108,7 +174,7 @@ public function create(Request $request): JsonResponse
     $obraData = [
         'id' => $obra->getId(),
         'titulo' => $obra->getTitulo(),
-        'genero' => $obra->getGenero(),
+        'descripcion' => $obra->getDescripcion(),
         'autor' => $obra->getAutor()
     ];
 

@@ -5,82 +5,85 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Obra
- *
- * @ORM\Table(name="obra")
+ * @ORM\Table(name="Obra")
  * @ORM\Entity
  */
 class Obra
 {
     /**
-     * @var int
-     *
-     * @ORM\Column(name="ID", type="integer", nullable=false)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue
+     * @ORM\Column(type="integer")
      */
     private $id;
 
     /**
-     * @var string|null
-     *
-     * @ORM\Column(name="Titulo", type="string", length=255, nullable=true, options={"default"="NULL"})
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $titulo = 'NULL';
+    private $titulo;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="Genero", type="string", length=50, nullable=false)
+     * @ORM\Column(type="text", nullable=true)
      */
-    private $genero;
+    private $descripcion;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(name="Autor", type="string", length=255, nullable=false)
+     * @ORM\Column(type="string", length=255)
      */
     private $autor;
-    
+
+    /**
+     * @ORM\Column(                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ", type="string", length=255, nullable=true)
+     */
+    private $rutaImagen;
+
+
     public function getId(): ?int
     {
         return $this->id;
     }
- 
+
     public function getTitulo(): ?string
     {
         return $this->titulo;
     }
- 
-    public function setTitulo(string $titulo): static
+
+    public function setTitulo(?string $titulo): self
     {
         $this->titulo = $titulo;
- 
         return $this;
     }
- 
-    public function getGenero(): ?string
+
+    public function getDescripcion(): ?string
     {
-        return $this->genero;
+        return $this->descripcion;
     }
- 
-    public function setGenero(string $genero): static
+
+    public function setDescripcion(?string $descripcion): self
     {
-        $this->genero = $genero;
- 
+        $this->descripcion = $descripcion;
         return $this;
     }
- 
+
     public function getAutor(): ?string
     {
         return $this->autor;
     }
- 
-    public function setAutor(string $autor): static
+
+    public function setAutor(string $autor): self
     {
         $this->autor = $autor;
- 
         return $this;
     }
 
+    public function getRutaImagen(): ?string
+    {
+        return $this->rutaImagen;
+    }
+
+    public function setRutaImagen(?string $rutaImagen): self
+    {
+        $this->rutaImagen = $rutaImagen;
+        return $this;
+    }
 }

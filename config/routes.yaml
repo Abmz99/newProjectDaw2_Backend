@@ -16,3 +16,8 @@ contact:
 obra_show:
     path: /obra/{titulo}
     controller: App\Controller\ObraController::getSpecificObra
+
+app_get_obra_by_id:
+    path: /api/obra/{id}
+    controller: App\Controller\ObraController::getObraById
+    methods: GET

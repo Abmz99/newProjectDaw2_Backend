@@ -36,9 +36,10 @@ private $contenido;
 
 /**
  * @ORM\ManyToOne(targetEntity=Obra::class)
- * @ORM\JoinColumn(name="ID_obra", referencedColumnName="ID")
+ * @ORM\JoinColumn(name="ID_obra", referencedColumnName="id")
  */
 private $idObra;
+
 
 public function getIdCapitulo(): ?int
 {
