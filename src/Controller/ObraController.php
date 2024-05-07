@@ -75,9 +75,40 @@ class ObraController extends AbstractController
 
 
 
-
-
+    #[Route('/generos/{id}', name: 'app_obras_by_genero', methods: ['GET'])]
+    public function getObrasByGeneroId(int $id, ObraGenerosRepository $obraGenerosRepository): Response
+    {
+        // Obtener las obras relacionadas con el género por su ID utilizando el repositorio
+        $obras = $obraGenerosRepository->findObrasByGeneroId($id);
     
+        // Formatear los datos de las obras
+        $formattedObras = [];
+        foreach ($obras as $obra) {
+            $formattedObras[] = [
+                'id' => $obra['id'],
+                'titulo' => $obra['titulo'],
+                'descripcion' => $obra['descripcion'],
+                'autor' => $obra['autor'],
+                'rutaImagen' => $obra['rutaImagen'],
+            ];
+        }
+    
+        // Retornar la respuesta JSON con las obras asociadas al género
+        return $this->json($formattedObras);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -2,12 +2,12 @@ security:
     enable_authenticator_manager: true
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
-
+ 
     providers:
         # Define tu proveedor de usuarios personalizado
         app_user_provider:
             id: App\Security\CustomEntityUserProvider
-
+ 
     firewalls:
         login:
             pattern: ^/api/usuario/login
@@ -16,25 +16,27 @@ security:
                 check_path: /api/usuario/login
                 username_path: correo
                 password_path: password
-                success_handler: lexik_jwt_authentication.handler.authentication_success
+            #   success_handler: App\Controller\CustomAuthController::handleSuccessfulAuthentication
+                success_handler: app.service.customAuthService
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-
+ 
         api:
             pattern: ^/api/capitulos
             stateless: true
+           
+        comentarios: # Nuevo firewall para proteger la ruta /api/comentarios
+            pattern: ^/api/comentarios
+            stateless: true
             #  jwt: true
-
+ 
         # Desactiva la seguridad para el entorno de desarrollo
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
-
-        # Configura el firewall principal
-        # main:
-        #     lazy: true
-        #     provider: app_user_provider
-
+ 
     access_control:
-        - { path: ^/api/usuario/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/usuario/registro, roles: PUBLIC_ACCESS }
-        - { path: ^/api/capitulos, roles: PUBLIC_ACCESS }
+        - { path: ^/api, roles: PUBLIC_ACCESS }
+        # - { path: ^/api/usuario/registro, roles: PUBLIC_ACCESS }
+        # - { path: ^/api/capitulos, roles: PUBLIC_ACCESS }
+        # - { path: ^/api/comentarios, roles: PUBLIC_ACCESS }
+ 

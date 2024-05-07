@@ -2,7 +2,7 @@
 
 // CapituloController.php
 namespace App\Controller;
-
+use App\Entity\Obra;
 use App\Entity\Capitulos;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

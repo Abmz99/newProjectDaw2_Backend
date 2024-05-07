@@ -23,4 +23,19 @@ class ObraGenerosRepository extends ServiceEntityRepository
             ->getResult();
     }
     
+
+    public function findObrasByGeneroId(int $generoId): array
+    {
+        return $this->createQueryBuilder('og')
+            ->select('obra.id as id', 'obra.titulo as titulo', 'obra.descripcion as descripcion', 'obra.autor as autor', 'obra.rutaImagen as rutaImagen')
+            ->innerJoin('og.id', 'obra')
+            ->innerJoin('og.idGenero', 'genero')
+            ->where('genero.id = :generoId')
+            ->setParameter('generoId', $generoId)
+            ->getQuery()
+            ->getResult();
+    }
+
+
+
 }

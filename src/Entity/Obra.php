@@ -10,9 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Obra
 {
-    /**
+  /**
      * @ORM\Id
-     * @ORM\GeneratedValue
+     * @ORM\GeneratedValue(strategy="IDENTITY")
      * @ORM\Column(type="integer")
      */
     private $id;
@@ -32,8 +32,8 @@ class Obra
      */
     private $autor;
 
-    /**
-     * @ORM\Column(                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             ", type="string", length=255, nullable=true)
+ /**
+     * @ORM\Column(name="RutaImagen", type="string", length=255, nullable=true)
      */
     private $rutaImagen;
 

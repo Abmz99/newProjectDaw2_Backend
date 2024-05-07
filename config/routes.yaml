@@ -12,7 +12,6 @@ contact:
     path: /contact
     controller: App\Controller\ContactController::getContactText
 
-
 obra_show:
     path: /obra/{titulo}
     controller: App\Controller\ObraController::getSpecificObra
@@ -21,3 +20,8 @@ app_get_obra_by_id:
     path: /api/obra/{id}
     controller: App\Controller\ObraController::getObraById
     methods: GET
+
+crear_comentario:
+    path: /api/comentarios
+    controller: App\Controller\ComentarioController::crearComentario
+    methods: POST
