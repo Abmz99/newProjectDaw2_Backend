@@ -74,7 +74,7 @@ public function editar(Request $request, UserPasswordHasherInterface $passwordHa
     }
  
     // Procesa los datos enviados y actualiza el usuario
-    $data = json_decode($request->getContent(), true);
+    $data = json_decode($request->getContent(), true); 
  
     // Actualiza el nombre si se proporciona en los datos, de lo contrario, mantiene el nombre existente
     $usuario->setNombre($data['name'] ?? $usuario->getNombre());
@@ -98,12 +98,37 @@ public function editar(Request $request, UserPasswordHasherInterface $passwordHa
 
 
 
+#[Route('/api/usuarios', name: 'api_usuario_listar', methods: ['GET'])]
+public function listarUsuarios(): JsonResponse
+{
+   
+    $usuarios = $this->entityManager->getRepository(Usuario::class)->findAll();
+ 
+    if (!$usuarios) {
+        return $this->json(['message' => 'No se encontraron usuarios.'], Response::HTTP_NOT_FOUND);
+    }
+ 
+    // Convertir la lista de usuarios a un array de arrays para asegurarse de no devolver objetos completos
+    $usuariosArray = array_map(function (Usuario $usuario) {
+        return [
+            'id' => $usuario->getIdUsuario(),
+            'nombre' => $usuario->getNombre(),
+            'correo' => $usuario->getCorreo(),
+            // Asegúrate de que el método getIdRol y getTipoRol estén correctamente definidos en tu entidad Usuario
+            'rol' => $usuario->getIdRol()->getTipoRol()
+        ];
+    }, $usuarios);
+ 
+    return $this->json($usuariosArray);
+}
+ 
+
 #[Route('/api/usuario/{id}', name: 'api_usuario_eliminar', methods: ['DELETE'])]
 public function eliminarUsuario(int $id): JsonResponse
 {
-    if (!$this->isGranted('ROLE_ADMIN')) {
-        return $this->json(['message' => 'Acceso denegado. Solo los administradores pueden eliminar usuarios.'], Response::HTTP_FORBIDDEN);
-    }
+   // if (!$this->isGranted('ROLE_ADMIN')) {
+     //   return $this->json(['message' => 'Acceso denegado. Solo los administradores pueden eliminar usuarios.'], Response::HTTP_FORBIDDEN);
+    //}
  
     $usuario = $this->entityManager->getRepository(Usuario::class)->find($id);
     if (!$usuario) {
@@ -116,7 +141,11 @@ public function eliminarUsuario(int $id): JsonResponse
     return $this->json(['message' => 'Usuario eliminado con éxito.']);
 }
  
- 
+
+
+
+
+
 
 
 #[Route('/api/usuario/login', name: 'api_usuario_login', methods: ['POST'])]
