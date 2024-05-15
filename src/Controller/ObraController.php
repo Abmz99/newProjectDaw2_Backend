@@ -22,22 +22,17 @@ class ObraController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-    
-
-
     #[Route('/obra/{id}', name: 'app_obra_by_id', methods: ['GET'])]
     public function getObraById(ManagerRegistry $doctrine, int $id): JsonResponse
-    {          
-        $obraRepository = $doctrine->getRepository(Obra::class);   
-          
+    {
+        $obraRepository = $doctrine->getRepository(Obra::class);
 
         $obra = $obraRepository->findOneBy(['id' => $id]);
 
-     
         if (!$obra) {
             return new JsonResponse(['error' => 'Obra no encontrada'], Response::HTTP_NOT_FOUND);
         }
- 
+
         $obraData = [
             'id' => $obra->getId(),
             'titulo' => $obra->getTitulo(),
@@ -57,7 +52,7 @@ class ObraController extends AbstractController
     {
         // Obtener los géneros asociados a la obra por su ID utilizando el repositorio
         $generos = $obraGenerosRepository->findGeneroByObraId($id);
-    
+
         // Formatear los datos de los géneros
         $formattedGeneros = [];
         foreach ($generos as $genero) {
@@ -66,52 +61,10 @@ class ObraController extends AbstractController
                 'nombre' => $genero['nombre'],
             ];
         }
-    
+
         // Retornar la respuesta JSON con los géneros asociados a la obra
         return $this->json($formattedGeneros);
     }
-    
-
-
-
-
-    #[Route('/generos/{id}', name: 'app_obras_by_genero', methods: ['GET'])]
-    public function getObrasByGeneroId(int $id, ObraGenerosRepository $obraGenerosRepository): Response
-    {
-        // Obtener las obras relacionadas con el género por su ID utilizando el repositorio
-        $obras = $obraGenerosRepository->findObrasByGeneroId($id);
-    
-        // Formatear los datos de las obras
-        $formattedObras = [];
-        foreach ($obras as $obra) {
-            $formattedObras[] = [
-                'id' => $obra['id'],
-                'titulo' => $obra['titulo'],
-                'descripcion' => $obra['descripcion'],
-                'autor' => $obra['autor'],
-                'rutaImagen' => $obra['rutaImagen'],
-            ];
-        }
-    
-        // Retornar la respuesta JSON con las obras asociadas al género
-        return $this->json($formattedObras);
-    }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // Método para obtener obras por autor, devuelve JSON
     #[Route('/obra/autor/{autor}', name: 'app_obra_by_autor', methods: ['GET'])]
@@ -189,36 +142,36 @@ class ObraController extends AbstractController
 
 
 
-    #[Route('/obra/create', name: 'app_obra_create', methods: ['POST','GET'])]
-public function create(Request $request): JsonResponse
-{
-    $data = json_decode($request->getContent(), true);
+    #[Route('/obra/create', name: 'app_obra_create', methods: ['POST', 'GET'])]
+    public function create(Request $request): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
 
-    $obra = new Obra();
-    $obra->setTitulo($data['titulo']);
-    $obra->setDescripcion($data['descripcion']);
-    $obra->setAutor($data['autor']);
+        $obra = new Obra();
+        $obra->setTitulo($data['titulo']);
+        $obra->setDescripcion($data['descripcion']);
+        $obra->setAutor($data['autor']);
 
-    $this->entityManager->persist($obra);
-    $this->entityManager->flush();
+        $this->entityManager->persist($obra);
+        $this->entityManager->flush();
 
-    $obraData = [
-        'id' => $obra->getId(),
-        'titulo' => $obra->getTitulo(),
-        'descripcion' => $obra->getDescripcion(),
-        'autor' => $obra->getAutor()
-    ];
+        $obraData = [
+            'id' => $obra->getId(),
+            'titulo' => $obra->getTitulo(),
+            'descripcion' => $obra->getDescripcion(),
+            'autor' => $obra->getAutor()
+        ];
 
-    return $this->json([
-        'message' => 'Obra creada',
-        'obra' => $obraData
-    ], Response::HTTP_CREATED);
-}
+        return $this->json([
+            'message' => 'Obra creada',
+            'obra' => $obraData
+        ], Response::HTTP_CREATED);
+    }
 
-    
+
 
     // Método para actualizar una obra existente, recibe datos por PUT y devuelve JSON
-    #[Route('/obra/update/{id}', name: 'app_obra_update', methods: ['PUT','GET'])]
+    #[Route('/obra/update/{id}', name: 'app_obra_update', methods: ['PUT', 'GET'])]
     public function update(Request $request, $id): JsonResponse
     {
         // Busca la obra por ID y actualiza sus datos
@@ -244,7 +197,7 @@ public function create(Request $request): JsonResponse
     }
 
     // Método para eliminar una obra, recibe el ID por DELETE y devuelve JSON
-    #[Route('/obra/delete/{id}', name: 'app_obra_delete', methods: ['DELETE','GET'])]
+    #[Route('/obra/delete/{id}', name: 'app_obra_delete', methods: ['DELETE', 'GET'])]
     public function delete($id): JsonResponse
     {
         // Busca la obra por ID y la elimina si existe
