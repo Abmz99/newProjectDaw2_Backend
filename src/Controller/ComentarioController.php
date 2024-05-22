@@ -1,7 +1,7 @@
 <?php
  
 namespace App\Controller;
- 
+
 use App\Entity\Comentarios;
 use App\Entity\Obra;
 use App\Entity\Usuario;
@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Repository\ComentariosRepository;
  
 class ComentarioController extends AbstractController
 {
@@ -67,4 +68,23 @@ class ComentarioController extends AbstractController
             'mensaje' => $comentario->getTexto()
         ]);
     }
-}   
+ 
+
+
+
+    #[Route('/api/comentarios/obra/{idObra}', name: 'obtener_comentarios', methods: ['GET'])]
+    public function obtenerComentarios($idObra, ComentariosRepository $comentariosRepository): JsonResponse
+    {
+        $comentarios = $comentariosRepository->findBy(['obra' => $idObra]);
+ 
+        $comentariosData = array_map(function ($comentario) {
+            return [
+                'usuario' => $comentario->getUsuario()->getNombre(),
+                'texto' => $comentario->getTexto(),
+                'fecha' => $comentario->getFecha()->format('Y-m-d H:i:s')
+            ];
+        }, $comentarios);
+ 
+        return new JsonResponse($comentariosData);
+    }
+}

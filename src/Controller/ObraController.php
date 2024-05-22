@@ -23,17 +23,13 @@ class ObraController extends AbstractController
     }
 
     
-
-
     #[Route('/obra/{id}', name: 'app_obra_by_id', methods: ['GET'])]
     public function getObraById(ManagerRegistry $doctrine, int $id): JsonResponse
     {          
         $obraRepository = $doctrine->getRepository(Obra::class);   
           
-
         $obra = $obraRepository->findOneBy(['id' => $id]);
 
-     
         if (!$obra) {
             return new JsonResponse(['error' => 'Obra no encontrada'], Response::HTTP_NOT_FOUND);
         }

@@ -59,7 +59,8 @@ public function registro(Request $request, UserPasswordHasherInterface $password
  
  
 #[Route('/api/usuario/editar/{email}', name: 'api_usuario_editar', methods: ['PUT'])]
-public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, string $email, UsuarioRepository $userRepo): JsonResponse
+public function editar(Request $request, UserPasswordHasherInterface $passwordHasher, string $email, UsuarioRepository $userRepo)
+: JsonResponse
 {
     // Obtiene la información del usuario actual desde el frontend ID del usuario)  
     // $email = $request->headers->get('name');
@@ -97,11 +98,13 @@ public function editar(Request $request, UserPasswordHasherInterface $passwordHa
 
 
 
-
 #[Route('/api/usuarios', name: 'api_usuario_listar', methods: ['GET'])]
 public function listarUsuarios(): JsonResponse
 {
-   
+    // if (!$this->isGranted('ROLE_ADMIN')) {
+    //     return $this->json(['message' => 'Acceso denegado. Solo los administradores pueden acceder a esta información.'], Response::HTTP_FORBIDDEN);
+    // }
+ 
     $usuarios = $this->entityManager->getRepository(Usuario::class)->findAll();
  
     if (!$usuarios) {
@@ -122,14 +125,13 @@ public function listarUsuarios(): JsonResponse
     return $this->json($usuariosArray);
 }
  
-
-#[Route('/api/usuario/{id}', name: 'api_usuario_eliminar', methods: ['DELETE'])]
+ 
+ 
+// Symfony Controller
+ 
+#[Route('/api/usuarios/{id}', name: 'api_usuario_eliminar', methods: ['DELETE'])]
 public function eliminarUsuario(int $id): JsonResponse
 {
-   // if (!$this->isGranted('ROLE_ADMIN')) {
-     //   return $this->json(['message' => 'Acceso denegado. Solo los administradores pueden eliminar usuarios.'], Response::HTTP_FORBIDDEN);
-    //}
- 
     $usuario = $this->entityManager->getRepository(Usuario::class)->find($id);
     if (!$usuario) {
         return $this->json(['message' => 'Usuario no encontrado.'], Response::HTTP_NOT_FOUND);
@@ -141,8 +143,6 @@ public function eliminarUsuario(int $id): JsonResponse
     return $this->json(['message' => 'Usuario eliminado con éxito.']);
 }
  
-
-
 
 
 

@@ -32,8 +32,6 @@ class CapituloController extends AbstractController
             'numero' => $capitulo->getNumCapitulo(),
             'titulo' => $capitulo->getTituloCapitulo(),
             'contenido' => $capitulo->getContenido(),
-        
         ]);
     }
-    
 }
