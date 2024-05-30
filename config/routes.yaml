@@ -25,3 +25,7 @@ crear_comentario:
     path: /api/comentarios
     controller: App\Controller\ComentarioController::crearComentario
     methods: POST
+    
+ultima_lectura:
+    resource: '../src/Controller/UltimaLecturaController.php'
+    type: annotation

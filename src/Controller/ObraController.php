@@ -69,7 +69,7 @@ class ObraController extends AbstractController
     
 
 
-
+    
 
     #[Route('/generos/{id}', name: 'app_obras_by_genero', methods: ['GET'])]
     public function getObrasByGeneroId(int $id, ObraGenerosRepository $obraGenerosRepository): Response
@@ -93,7 +93,48 @@ class ObraController extends AbstractController
         return $this->json($formattedObras);
     }
 
-
+#[Route('/obra/busqueda/{titulo}', name: 'app_obra_search', methods: ['GET'])]
+    public function searchObrasByTitle(ManagerRegistry $registry, string $titulo): JsonResponse
+    {
+        if (strlen($titulo) < 6) {
+            return new JsonResponse(['error' => 'El título debe tener al menos 6 caracteres'], JsonResponse::HTTP_BAD_REQUEST);
+        }
+ 
+        $entityManager = $registry->getManagerForClass(Obra::class); // Obtén el EntityManager para la clase Obra
+ 
+        // Si no se puede obtener el EntityManager, devuelve un error
+        if (!$entityManager instanceof EntityManagerInterface) {
+            return new JsonResponse(['error' => 'No se pudo obtener el EntityManager'], JsonResponse::HTTP_INTERNAL_SERVER_ERROR);
+        }
+ 
+        // Crea la consulta utilizando el EntityManager
+        $query = $entityManager->createQueryBuilder()
+            ->select('o')
+            ->from(Obra::class, 'o')
+            ->where('SUBSTRING(o.titulo, 1, 6) = :titulo')
+            ->setParameter('titulo', substr($titulo, 0, 6))
+            ->getQuery();
+ 
+        // Ejecuta la consulta y obtén el resultado
+        $obras = $query->getResult();
+ 
+        if (empty($obras)) {
+            return new JsonResponse(['message' => 'No se encontraron obras con los primeros 5 caracteres de ese título']);
+        }
+ 
+        // Convierte las obras en un array y devuelve como JSON
+        $obrasData = array_map(function ($obra) {
+            return [
+                'id' => $obra->getId(),
+                'titulo' => $obra->getTitulo(),
+                'descripcion' => $obra->getDescripcion(),
+                'autor' => $obra->getAutor(),
+                'rutaImagen' => $obra->getRutaImagen(),
+            ];
+        }, $obras);
+ 
+        return new JsonResponse($obrasData);
+    }
 
 
 
