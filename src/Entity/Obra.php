@@ -5,19 +5,22 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(name="Obra")
  * @ORM\Entity
+ * @ORM\Table(name="Obra")
  */
 class Obra
 {
-  /**
+    /**
+     * @var int
+     * @ORM\Column(name="ID", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
-     * @ORM\Column(type="integer")
      */
     private $id;
 
+
     /**
+     * @var string|null
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $titulo;
@@ -28,14 +31,17 @@ class Obra
     private $descripcion;
 
     /**
+     * @var string
      * @ORM\Column(type="string", length=255)
      */
     private $autor;
 
- /**
+    /**
+     * @var string
      * @ORM\Column(name="RutaImagen", type="string", length=255, nullable=true)
      */
     private $rutaImagen;
+
 
 
     public function getId(): ?int
